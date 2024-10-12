@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import initialGoods from "./goods.json";
 
-function App() {
-  const [count, setCount] = useState(0)
+export const App = () => {
+  const [goods, setGoods] = useState(initialGoods);
+
+  function moveUp(good) {
+    setGoods((currentGoods) => {
+      const copy = [...currentGoods];
+      const index = copy.indexOf(good);
+
+      if (index < 1) {
+        return currentGoods;
+      }
+
+      copy[index] = copy[index - 1];
+      copy[index - 1] = good;
+
+      return copy;
+    });
+  }
+
+  function moveDown(good) {
+    const copy = [...goods];
+    const index = copy.indexOf(good);
+
+    if (index >= copy.length - 1) {
+      return;
+    }
+
+    // cut out two elements and insert them in reverse order
+    copy.splice(index, 2, copy[index + 1], copy[index]);
+
+    setGoods(copy);
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="GoodList">
+      {goods.map((good) => (
+        <div key={good.id} className="GoodCard" style={{ color: good.color }}>
+          <button onClick={() => moveUp(good)}>▲</button>
+          <button onClick={() => moveDown(good)}>▼</button>
+          <button
+            onClick={() => {
+              moveUp(good);
+              moveUp(good);
+              moveUp(good);
+            }}
+          >
+            ▲▲▲
+          </button>
 
-export default App
+          {good.name}
+        </div>
+      ))}
+    </div>
+  );
+};
+export default App;
